@@ -1,0 +1,6 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/addNewDebtMenuItem" android:title="Add debt"></item><item android:id="@+id/deleteSelectedMenuItem" android:title="Delete selected"></item>
+    <item android:id="@+id/deleteAllMenuItem" android:title="Delete all debts"></item>
+    
+
+</menu>

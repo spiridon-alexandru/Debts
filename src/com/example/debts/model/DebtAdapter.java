@@ -1,31 +1,29 @@
 package com.example.debts.model;
 
-import java.util.ArrayList;
-
 import com.example.debts.R;
-import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.view.LayoutInflater;
+import android.database.Cursor;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.TextView;
 
-public class DebtAdapter extends ArrayAdapter<Debt>
+public class DebtAdapter extends SimpleCursorAdapter
 {
-    Context context; 
+    Context context;
+    Cursor c;
     int layoutResourceId;    
     
     /**
      * Constructor.
      */
-    public DebtAdapter(Context context, int layoutResourceId, ArrayList<Debt> data)
+	public DebtAdapter(Context context, int layoutResourceId, Cursor c,
+            String[] from, int[] to, int flags)
     {
-    	super(context, layoutResourceId, data);
+    	super(context, layoutResourceId, c, from, to, flags);
         
+    	this.c = c;
         this.layoutResourceId = layoutResourceId;
         this.context = context;
     }
@@ -35,7 +33,7 @@ public class DebtAdapter extends ArrayAdapter<Debt>
      */
     public void removeSelectedItems()
     {
-    	ArrayList<Debt> itemsToRemove = new ArrayList<Debt>();
+    /*	ArrayList<Debt> itemsToRemove = new ArrayList<Debt>();
     	for(int i = 0; i < getCount(); i++)
 		{
 			Debt d = getItem(i);
@@ -48,12 +46,26 @@ public class DebtAdapter extends ArrayAdapter<Debt>
     	for (int i = 0; i < itemsToRemove.size(); i++)
     	{
     		remove(itemsToRemove.get(i));
-    	}
+    	} */
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+    	if(convertView == null)
+            convertView = View.inflate(context, R.layout.listview_item_layout, null);
         View row = convertView;
+
+        c.moveToPosition(position);
+        
+        TextView main = (TextView) convertView.findViewById(R.id.txtTitle);
+        main.setText(c.getString(0) + " " +
+        		c.getString(1) + " " +
+        		c.getString(2));
+        
+        CheckBox deleteCheckbox = (CheckBox) convertView.findViewById(R.id.deleteCheckbox);
+    	deleteCheckbox.setChecked(false);
+        
+/*    	View row = convertView;
         DebtHolder holder = null;
         
         if(row == null)
@@ -75,26 +87,26 @@ public class DebtAdapter extends ArrayAdapter<Debt>
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 int position = (Integer) buttonView.getTag();  // Here we get the position that we have set for the checkbox using setTag.
-                getItem(position).setChecked(isChecked); // Set the value of checkbox to maintain its state. 
+                ((Debt)getItem(position)).setChecked(isChecked); // Set the value of checkbox to maintain its state. 
             }
         });
         
         holder.deleteCheckbox.setTag(position);
         
-        Debt debt = getItem(position);
+        Debt debt = (Debt)getItem(position);
         String text = debt.getName() + ": " + debt.getSum();
         holder.txtTitle.setText(text);
         holder.deleteCheckbox.setFocusable(false);
-        holder.deleteCheckbox.setChecked(getItem(position).isChecked());
+        holder.deleteCheckbox.setChecked(((Debt)getItem(position)).isChecked());
         
-        if (debt.give())
+        if (debt.isMyDebt())
         {
         	holder.txtTitle.setTextColor(Color.RED);
         }
         else
         {
         	holder.txtTitle.setTextColor(Color.GREEN);
-        }
+        } */
         
         return row;
     }

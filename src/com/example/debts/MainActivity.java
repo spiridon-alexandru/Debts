@@ -8,21 +8,32 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.app.Activity;
 import android.app.Dialog;
+import android.database.Cursor;
 
 import com.example.debts.model.*;
+import com.example.debts.repository.DebtsDbAdapter;
 
 public class MainActivity extends Activity {
-	private DebtCollection debts;
 	private DebtAdapter adapter;
 	private ListView listView;
+	private DebtsDbAdapter dbHelper;
+	private String[] columns;
+	private int[] to;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		dbHelper = new DebtsDbAdapter(this);
+		dbHelper.open();
+		 
+		//Clean all data
+		dbHelper.deleteAllDebts();
+		//Add some data
+		dbHelper.insertSomeDebts();
 		
 		setupListView();
 	}
@@ -54,19 +65,30 @@ public class MainActivity extends Activity {
 	
 	private void setupListView()
 	{
-		debts = new DebtCollection();
-		debts.generateRandomCollection();
+		Cursor cursor = dbHelper.fetchAllDebts();
+		 
+		// The desired columns to be bound
+		columns = new String[] {
+				DebtsDbAdapter.KEY_NAME,
+				DebtsDbAdapter.KEY_SUM,
+				DebtsDbAdapter.KEY_TYPE
+		};
+		
+		// the XML defined views which the data will be bound to
+		to = new int[] { 
+				R.id.txtTitle,
+				R.id.deleteCheckbox,
+		};
+		
+		//debts = new DebtCollection();
+		//debts.generateRandomCollection();
 		
 		listView = (ListView) findViewById(R.id.mylist);
-
-		// Define a new Adapter
-		// First parameter - Context
-		// Second parameter - Layout for the row
-		// Third parameter - ID of the TextView to which the data is written
-		// Forth - the Array of data
-
-		adapter = new DebtAdapter(this, 
-                R.layout.listview_item_layout, debts.getDebts());
+		
+		// create the adapter using the cursor pointing to the desired data 
+		//as well as the layout information
+		adapter = new DebtAdapter(this, R.layout.listview_item_layout,
+				cursor, columns, to, 0);
 		// Assign adapter to ListView
 		listView.setAdapter(adapter);
 	}
@@ -78,7 +100,7 @@ public class MainActivity extends Activity {
 	
 	private void deleteAll()
 	{
-		adapter.clear();
+		dbHelper.deleteAllDebts();
 	}
 	
 	private void addDebt()
@@ -105,7 +127,8 @@ public class MainActivity extends Activity {
 											Double.parseDouble(sum),
 											typeCheckBox.isChecked());
 					
-					adapter.add(newDebt);
+					dbHelper.createDebt(newDebt);
+					refreshListView();
 					dialog.dismiss();
 				}
 				else
@@ -132,5 +155,18 @@ public class MainActivity extends Activity {
 		});
 
 		dialog.show();
+	}
+	
+	/**
+	 * Refreshes the list view.
+	 */
+	private void refreshListView()
+	{
+		Cursor cursor = dbHelper.fetchAllDebts();   
+
+		adapter = new DebtAdapter(this, R.layout.listview_item_layout,
+				cursor, columns, to, 0);
+
+		listView.setAdapter(adapter);
 	}
 }

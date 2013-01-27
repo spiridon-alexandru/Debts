@@ -89,7 +89,7 @@ public class Debt
 	 * Gets the kind of debt.
 	 * @return true if I have to give, false otherwise.
 	 */
-	public boolean give()
+	public boolean isMyDebt()
 	{
 		return this.shouldGive;
 	}

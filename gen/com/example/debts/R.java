@@ -14,13 +14,13 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int addNewDebtMenuItem=0x7f07000e;
+        public static final int addNewDebtMenuItem=0x7f07000f;
         public static final int buttonsLayout=0x7f070009;
         public static final int debtTypeCheckbox=0x7f070008;
         public static final int debtTypeLayout=0x7f070007;
-        public static final int deleteAllMenuItem=0x7f070010;
-        public static final int deleteCheckbox=0x7f07000d;
-        public static final int deleteSelectedMenuItem=0x7f07000f;
+        public static final int deleteAllMenuItem=0x7f070011;
+        public static final int deleteCheckbox=0x7f07000e;
+        public static final int deleteSelectedMenuItem=0x7f070010;
         public static final int dialogButtonAdd=0x7f07000a;
         public static final int dialogButtonCancel=0x7f07000b;
         public static final int mylist=0x7f070000;
@@ -30,6 +30,7 @@ public final class R {
         public static final int sumEditText=0x7f070006;
         public static final int sumLayout=0x7f070004;
         public static final int sumText=0x7f070005;
+        public static final int txtSumTitle=0x7f07000d;
         public static final int txtTitle=0x7f07000c;
     }
     public static final class layout {

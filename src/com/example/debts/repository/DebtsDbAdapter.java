@@ -98,6 +98,11 @@ public class DebtsDbAdapter
 		 return mDb.insert(SQLITE_TABLE, null, initialValues);
 	 }
 	 
+	 public long deleteDebt(int id)
+	 {
+		 return mDb.delete(SQLITE_TABLE, KEY_ROWID + "=" + id, null);
+	 }
+	 
 	 public boolean deleteAllDebts()
 	 {
 		 int doneDelete = 0;

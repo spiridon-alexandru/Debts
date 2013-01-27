@@ -1,5 +1,7 @@
 package com.example.debts;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,11 +31,6 @@ public class MainActivity extends Activity {
 		
 		dbHelper = new DebtsDbAdapter(this);
 		dbHelper.open();
-		 
-		//Clean all data
-		dbHelper.deleteAllDebts();
-		//Add some data
-		dbHelper.insertSomeDebts();
 		
 		setupListView();
 	}
@@ -80,9 +77,6 @@ public class MainActivity extends Activity {
 				R.id.deleteCheckbox,
 		};
 		
-		//debts = new DebtCollection();
-		//debts.generateRandomCollection();
-		
 		listView = (ListView) findViewById(R.id.mylist);
 		
 		// create the adapter using the cursor pointing to the desired data 
@@ -95,12 +89,32 @@ public class MainActivity extends Activity {
 
 	private void deleteSelected()
 	{
-		adapter.removeSelectedItems();
+		ArrayList<Integer> itemsToRemove = new ArrayList<Integer>();
+		for (int i = 0; i < adapter.getCheckedCount(); i++)
+		{
+			if (adapter.getChecked(i))
+			{
+				itemsToRemove.add(i);
+			}
+		}
+		
+		Cursor cursor = dbHelper.fetchAllDebts();
+		for (int i = itemsToRemove.size() - 1; i >= 0; i--)
+		{
+			int position = itemsToRemove.get(i);
+			adapter.removeChecked(position);
+			cursor.moveToPosition(position);
+			int id = Integer.parseInt(cursor.getString(0));
+			dbHelper.deleteDebt(id);
+		}
+		
+		refreshListView();
 	}
 	
 	private void deleteAll()
 	{
 		dbHelper.deleteAllDebts();
+		refreshListView();
 	}
 	
 	private void addDebt()
@@ -109,7 +123,7 @@ public class MainActivity extends Activity {
 		final Dialog dialog = new Dialog(this);
 		dialog.setContentView(R.layout.add_debt_dialog_layout);
 		dialog.setTitle("Add new debt");
-
+		
 		Button dialogAddButton = (Button) dialog.findViewById(R.id.dialogButtonAdd);
 		// if button is clicked, close the custom dialog
 		dialogAddButton.setOnClickListener(new android.widget.Button.OnClickListener() {
@@ -128,6 +142,7 @@ public class MainActivity extends Activity {
 											typeCheckBox.isChecked());
 					
 					dbHelper.createDebt(newDebt);
+					adapter.addChecked();
 					refreshListView();
 					dialog.dismiss();
 				}
@@ -162,10 +177,9 @@ public class MainActivity extends Activity {
 	 */
 	private void refreshListView()
 	{
-		Cursor cursor = dbHelper.fetchAllDebts();   
-
-		adapter = new DebtAdapter(this, R.layout.listview_item_layout,
-				cursor, columns, to, 0);
+		Cursor cursor = dbHelper.fetchAllDebts();
+		
+		adapter.changeCursor(cursor);
 
 		listView.setAdapter(adapter);
 	}
